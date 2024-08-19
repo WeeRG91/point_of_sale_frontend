@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useStore } from "../../store/rootStore";
 import { Navigate } from "react-router-dom";
+import { observer } from "mobx-react-lite";
 
 //Define Yup schema for validation
 const schema = yup.object().shape({
@@ -34,7 +35,7 @@ function Login() {
 
   const isAuthenticated = authStore.isAuthenticated;
   if (isAuthenticated) {
-    return <Navigate to="/customers" />;
+    return <Navigate to="/dashboard/customers" />;
   }
 
   const onSubmit = async (data: any) => {
@@ -117,4 +118,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default observer(Login);

@@ -13,8 +13,12 @@ export class AuthStore {
       token: observable,
       setIsAuthenticated: action,
       setToken: action,
+      login: action,
+      logout: action,
     });
     this.rootStore = rootStore;
+    this.setToken(localStorage.getItem("_token")!);
+    if (this.token) this.isAuthenticated = true;
   }
 
   setIsAuthenticated = (value: boolean) => {
@@ -53,6 +57,31 @@ export class AuthStore {
       }
     } catch (error: any) {
       console.log(error);
+      this.rootStore.handleError(419, "Something went wrong", error);
+    }
+  };
+
+  logout = async () => {
+    try {
+      const response = await fetch(this.BASE_URL + "/logout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        this.rootStore.handleError(response.status, data.message.data);
+        return Promise.reject(data);
+      } else {
+        this.setIsAuthenticated(false);
+        localStorage.removeItem('_token');
+        return Promise.resolve(data);
+      }
+    } catch (error) {
       this.rootStore.handleError(419, "Something went wrong", error);
     }
   };
