@@ -1,12 +1,16 @@
 import React from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 import Login from "../pages/guest/Login";
-import Customers from "../pages/auth/customers";
 import BaseLayout from "../components/layouts/BaseLayout";
 import AuthenticatedRoute from "../middleware/AuthenticatedRoute";
+import Customers from "../pages/auth/customers";
 import CustomerList from "../pages/auth/customers/List";
 import CustomerCreate from "../pages/auth/customers/Create";
 import CustomerEdit from "../pages/auth/customers/Edit";
+import Products from "../pages/auth/products";
+import ProductList from "../pages/auth/products/List";
+import ProductCreate from "../pages/auth/products/Create";
+import ProductEdit from "../pages/auth/products/Edit";
 
 const routes = [
   { path: "/", element: <Navigate to="/login" /> },
@@ -27,7 +31,12 @@ const routes = [
       },
       {
         path: "products",
-        element: <AuthenticatedRoute element={<Customers />} />,
+        element: <AuthenticatedRoute element={<Products />} />,
+        children: [
+          { path: "", element: <ProductList /> },
+          { path: "create", element: <ProductCreate /> },
+          { path: "edit/:id", element: <ProductEdit /> },
+        ],
       },
     ],
   },

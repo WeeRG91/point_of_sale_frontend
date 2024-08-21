@@ -67,7 +67,7 @@ const CustomerEdit = () => {
 
   useEffect(() => {
     initForm();
-  }, [id]);
+  }, []);
 
   const onSubmit = async (data: any) => {
     try {

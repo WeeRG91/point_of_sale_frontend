@@ -7,8 +7,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
 
-export class CustomerStore {
-  BASE_URL = process.env.REACT_APP_API_URL + "/customers";
+export class ProductStore {
+  BASE_URL = process.env.REACT_APP_API_URL + "/products";
 
   rootStore: IRootStore;
   rowData: GridRowsProp[] = [];
@@ -35,11 +35,10 @@ export class CustomerStore {
       ),
     },
     { field: "id", headerName: "Id", width: 100 },
-    { field: "first_name", headerName: "First Name", width: 150 },
-    { field: "last_name", headerName: "Last Name", width: 150 },
-    { field: "email", headerName: "Email", width: 200 },
-    { field: "phone_number", headerName: "Phone Number", width: 200 },
-    { field: "zip_code", headerName: "Zip Code", width: 150 },
+    { field: "name", headerName: "Product Name", width: 150 },
+    { field: "category_id", headerName: "Category", width: 150 },
+    { field: "price", headerName: "Price", width: 200 },
+    { field: "stock", headerName: "Stock", width: 200 },
   ];
 
   constructor(rootStore: IRootStore) {
@@ -48,9 +47,10 @@ export class CustomerStore {
       columns: observable,
       setRowData: action,
       fetchList: action,
-      getCustomer: action,
+      getProduct: action,
       create: action,
       update: action,
+      getCategories: action,
     });
     this.rootStore = rootStore;
   }
@@ -78,7 +78,7 @@ export class CustomerStore {
         );
         return Promise.reject(data);
       } else {
-        this.setRowData(data.data.customers);
+        this.setRowData(data.data.products);
         return Promise.resolve(data);
       }
     } catch (error: any) {
@@ -86,7 +86,33 @@ export class CustomerStore {
     }
   };
 
-  getCustomer = async (id: number | string) => {
+  getCategories = async () => {
+    try {
+      const response = await fetch(this.BASE_URL + "/categories", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.rootStore.authStore.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      if (data.error) {
+        this.rootStore.handleError(
+          response.status,
+          `HTTP Request failed: ${response.status} ${response.statusText}`,
+          data
+        );
+        return Promise.reject(data);
+      } else {
+        return Promise.resolve(data);
+      }
+    } catch (error: any) {
+      this.rootStore.handleError(419, "Something went wrong!", error);
+    }
+  };
+
+  getProduct = async (id: number | string) => {
     try {
       const response = await fetch(this.BASE_URL + `/${id}`, {
         method: "GET",
@@ -114,9 +140,8 @@ export class CustomerStore {
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.rootStore.authStore.token}`,
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify(postData),
+        body: postData,
       });
 
       const data = await response.json();
@@ -135,12 +160,11 @@ export class CustomerStore {
   update = async (id: number | string, postData: any) => {
     try {
       const response = await fetch(this.BASE_URL + `/${id}`, {
-        method: "PUT",
+        method: "POST",
         headers: {
           Authorization: `Bearer ${this.rootStore.authStore.token}`,
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify(postData),
+        body: postData,
       });
 
       const data = await response.json();
@@ -183,7 +207,7 @@ export class CustomerStore {
   deleteDialog = async (params: any) => {
     this.rootStore.dialogStore.openDialog({
       confirmFn: () => this.delete(params.row.id),
-      dialogText: "Are you sure you want to delete this customer ?",
+      dialogText: "Are you sure you want to delete this product ?",
     });
   };
 }
