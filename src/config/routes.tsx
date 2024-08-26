@@ -11,6 +11,11 @@ import Products from "../pages/auth/products";
 import ProductList from "../pages/auth/products/List";
 import ProductCreate from "../pages/auth/products/Create";
 import ProductEdit from "../pages/auth/products/Edit";
+import Orders from "../pages/auth/orders";
+import OrderList from "../pages/auth/orders/List";
+import OrderCreate from "../pages/auth/orders/Create";
+import OrderView from "../pages/auth/orders/View";
+
 
 const routes = [
   { path: "/", element: <Navigate to="/login" /> },
@@ -36,6 +41,15 @@ const routes = [
           { path: "", element: <ProductList /> },
           { path: "create", element: <ProductCreate /> },
           { path: "edit/:id", element: <ProductEdit /> },
+        ],
+      },
+      {
+        path: "orders",
+        element: <AuthenticatedRoute element={<Orders />} />,
+        children: [
+          { path: "", element: <OrderList /> },
+          { path: "create", element: <OrderCreate /> },
+          { path: "view/:id", element: <OrderView /> },
         ],
       },
     ],

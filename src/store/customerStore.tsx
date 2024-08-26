@@ -108,6 +108,33 @@ export class CustomerStore {
     }
   };
 
+  getCustomers = async (postData: any) => {
+    try {
+      const response = await fetch(this.BASE_URL + "/customerlist", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.rootStore.authStore.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+
+      const data = await response.json();
+      if (data.error) {
+        this.rootStore.handleError(
+          response.status,
+          `HTTP Request failed: ${response.status} ${response.statusText}`,
+          data
+        );
+        return Promise.reject(data);
+      } else {
+        return Promise.resolve(data.data.customers);
+      }
+    } catch (error) {
+      this.rootStore.handleError(419, "Something went wrong!", error);
+    }
+  };
+
   create = async (postData: any) => {
     try {
       const response = await fetch(this.BASE_URL, {
@@ -124,7 +151,10 @@ export class CustomerStore {
         this.rootStore.handleError(response.status, data.message, data);
         return Promise.reject(data);
       } else {
-        this.rootStore.alertStore.open({ status: "success", message: data.message });
+        this.rootStore.alertStore.open({
+          status: "success",
+          message: data.message,
+        });
         return Promise.resolve(data);
       }
     } catch (error) {
@@ -148,7 +178,10 @@ export class CustomerStore {
         this.rootStore.handleError(response.status, data.message, data);
         return Promise.reject(data);
       } else {
-        this.rootStore.alertStore.open({ status: "success", message: data.message });
+        this.rootStore.alertStore.open({
+          status: "success",
+          message: data.message,
+        });
         return Promise.resolve(data);
       }
     } catch (error) {
@@ -172,7 +205,10 @@ export class CustomerStore {
         return Promise.reject(data);
       } else {
         this.setRowData(this.rowData.filter((row: any) => row.id !== id));
-        this.rootStore.alertStore.open({ status: "success", message: data.message });
+        this.rootStore.alertStore.open({
+          status: "success",
+          message: data.message,
+        });
         return Promise.resolve(data);
       }
     } catch (error) {
